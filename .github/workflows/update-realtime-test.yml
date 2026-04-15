@@ -2,10 +2,10 @@ name: Update Realtime Test
 
 on:
   schedule:
-    # LEVEL: every 3 hours during day window 
-    - cron: "0 12,15,18,21,0,3 * * *"
-    # FLOW: twice daily 
-    - cron: "0 14,2 * * *"
+    # BOTH: etwice - to test
+    - cron: "0 16 * * *"
+    # FLOW: once - to test
+    - cron: "0 19 * * *"
   workflow_dispatch:
     inputs:
       mode:
@@ -46,13 +46,11 @@ jobs:
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             MODE="${{ github.event.inputs.mode }}"
           else
-            HOUR_UTC=$(date -u +%H)
-            # Flow twice daily at 02:00 and 14:00 UTC
-            if [ "$HOUR_UTC" = "02" ] || [ "$HOUR_UTC" = "14" ]; then
-              MODE="flow"
-            else
-              MODE="level"
-            fi
+            case "${{ github.event.schedule }}" in
+              "0 16 * * *") MODE="both" ;;
+              "0 19 * * *") MODE="level" ;;
+              *) MODE="level" ;;
+            esac
           fi
           echo "mode=$MODE" >> "$GITHUB_OUTPUT"
           echo "Selected mode: $MODE"
@@ -62,7 +60,7 @@ jobs:
         env:
           TZ: UTC
         run: |
-          Rscript scripts/update_realtime_data.R --mode=${{ steps.mode.outputs.mode }}
+          Rscript scripts/update_realtime_test.R --mode=${{ steps.mode.outputs.mode }}
 
       - name: Commit and push if changed
         if: success()
