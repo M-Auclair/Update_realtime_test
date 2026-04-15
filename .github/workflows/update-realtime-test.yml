@@ -2,10 +2,6 @@ name: Update Realtime Test
 
 on:
   schedule:
-    # BOTH: etwice - to test
-    - cron: "0 16 * * *"
-    # FLOW: once - to test
-    - cron: "0 19 * * *"
   workflow_dispatch:
     inputs:
       mode:
