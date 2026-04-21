@@ -1,17 +1,12 @@
 name: Update Realtime Test
 
 on:
-  schedule:
-    - cron: '21 13 * * *'  # 7:21 AM MDT
-    - cron: '21 16 * * *'  # 10:21 AM MDT
-    - cron: '21 21 * * *'  # 3:21 PM MDT
-    - cron: '21 22 * * *'  # 4:21 PM MDT
-    - cron: '21 23 * * *'  # 5:21 PM MDT
   workflow_dispatch:
 
 jobs:
   update-data:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     permissions:
       contents: write
 
@@ -41,7 +36,7 @@ jobs:
         env:
           TZ: UTC
         run: |
-          Rscript scripts/update_realtime_test.R --mode=${{ steps.mode.outputs.mode }}
+          Rscript scripts/update_realtime_test.R
 
       - name: Commit and push if changed
         if: success()
